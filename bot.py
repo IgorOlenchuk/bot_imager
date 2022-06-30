@@ -1,25 +1,17 @@
 import os
+import time
+import whois
 import logging
+import validators
+import keyboards as kb
+
 from aiogram import Bot, types, filters
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.utils.markdown import text, bold, italic, code, pre
-from aiogram.types import ParseMode, ChatActions
-
-from aiogram.types import ReplyKeyboardRemove, \
-    ReplyKeyboardMarkup, KeyboardButton, \
-    InlineKeyboardMarkup, InlineKeyboardButton
-
-import keyboards as kb
-
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from dotenv import load_dotenv
-
-import validators
-
-import whois
-
-import time
-
+from logging.handlers import RotatingFileHandler
 from selenium import webdriver
 from selenium.webdriver import FirefoxOptions
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
@@ -27,17 +19,46 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename='program.log', 
+    format='%(asctime)s, %(levelname)s, %(message)s, %(name)s'
+)
 
-#указываем путь на токены бота "файл .env"
+# Тут установлены настройки логгера
+logger = logging.getLogger(__name__)
+# Устанавливаем уровень, с которого логи будут сохраняться в файл
+logger.setLevel(logging.INFO)
+# Указываем обработчик логов
+handler = RotatingFileHandler('my_logger.log', maxBytes=50000000, backupCount=5)
+logger.addHandler(handler)
+
+logger.debug('123')
+logger.info('Сообщение отправлено')
+logger.warning('Большая нагрузка!')
+logger.error('Бот не смог отправить сообщение')
+logger.critical('Всё упало! Зовите админа!1!111') 
+
+# Создаем форматер
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+handler.setFormatter(formatter)
+
+# Указываем путь на токены бота "файл .env"
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 bot = Bot(token=TELEGRAM_TOKEN)
 dp = Dispatcher(bot)
 
-#указываем путь к firefox на сервере
+# Указываем путь к firefox на сервере
 binary = FirefoxBinary('/bin/firefox')
+options = webdriver.FirefoxOptions()
+options.add_argument('--headless')
+options.add_argument('--disable-gpu')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--no-sandbox')
 
-#команда /start
+
 @dp.message_handler(commands=['start'])
 async def process_start_command(msg: types.Message):
     text = 'Привет! Меня зовут Olencuhk_Imager.\n' \
@@ -50,7 +71,7 @@ async def process_start_command(msg: types.Message):
           'И находится в постоянной разработке.\n'
     await msg.answer(text=text, reply_markup=kb.inline_kb_full)
 
-#ссылка на сайт имеет шаблон простого текста, но внутри мы ловим исключения, если сслыка введена не корректно
+# Ссылка на сайт имеет шаблон простого текста, но внутри мы ловим исключения, если сслыка введена не корректно
 @dp.message_handler()
 async def get_screenshot(msg: types.Message):
     url = ""
@@ -65,21 +86,21 @@ async def get_screenshot(msg: types.Message):
         await msg.answer('Ошибка в адресе сайта')
     else:
         msg  = await msg.answer('Подождите, информация загружается...')
-        photo_path = str(uid) + '.png'
-        browser = webdriver.Firefox()
+        photo_path = f'screenshots/{msg.date}_{uid}_{url}.png'
+        browser = webdriver.Firefox(options = options)
         browser.set_window_size(1280, 1280)
 
-#начинаем отчет времени выполнения запроса
+# Начинаем отчет времени выполнения запроса
         tic = time.perf_counter()
         browser.get(f'https://{url}')
         browser.save_screenshot(photo_path)
         browser.quit()
         whois_info = whois.whois(url)
 
-#окончаение времени выполнения запроса
+# Окончаение времени выполнения запроса
         toc = time.perf_counter()
 
-#подгружаем кнопку под скриншотом, со встроенной ссылкой на whois
+# Подгружаем кнопку под скриншотом, со встроенной ссылкой на whois
         inline_btn_3 = InlineKeyboardButton('Подробнее', url=f'https://whois.ru/?domain={url}', show_alert=True)
         inline_kb_3 = InlineKeyboardMarkup(row_width=1).add(inline_btn_3)
         await bot.send_photo(msg.chat.id,
@@ -87,7 +108,7 @@ async def get_screenshot(msg: types.Message):
                              caption=f"{whois_info.domain_name}, Веб-сайт: {url} Время обработки: {toc - tic:0.4f} секунды",
                              reply_markup=inline_kb_3)
 
-#после выполнения запроса, удаляем текст "Подождите, информация загружается"
+# После выполнения запроса, удаляем текст "Подождите, информация загружается"
         await msg.delete()
 
 
