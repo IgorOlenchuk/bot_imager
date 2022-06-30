@@ -89,7 +89,6 @@ async def get_screenshot(msg: types.Message):
         photo_path = f'screenshots/{msg.date}_{uid}_{url}.png'
         browser = webdriver.Firefox(options = options)
         browser.set_window_size(1280, 1280)
-
 # Начинаем отчет времени выполнения запроса
         tic = time.perf_counter()
         browser.get(f'https://{url}')
