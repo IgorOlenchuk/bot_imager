@@ -4,14 +4,17 @@ import whois
 import logging
 import validators
 import keyboards as kb
+import psycopg2
 
 from aiogram import Bot, types, filters
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.utils.markdown import text, bold, italic, code, pre
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from database import DatBase
 from dotenv import load_dotenv
 from logging.handlers import RotatingFileHandler
+from psycopg2.extras import LoggingConnection
 from selenium import webdriver
 from selenium.webdriver import FirefoxOptions
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
@@ -45,6 +48,20 @@ formatter = logging.Formatter(
 )
 handler.setFormatter(formatter)
 
+# для логирования в БД, необходимо заранее создать БД на сервере + создать таблицу (например - сотрудники "employee")
+db_settings = {
+    "user": os.getenv('POSTGRES_USER'),
+    "password": os.getenv('POSTGRES_PASSWORD'),
+    "host": os.getenv('DB_HOST'),
+    "database" : os.getenv('DB_NAME'),
+    "port" : os.getenv('DB_PORT'),
+}
+conn = psycopg2.connect(connection_factory = LoggingConnection, **db_settings)
+LoggingConnection.initialize(conn, logger)
+cur = conn.cursor()
+cur.execute("CREATE TABLE bot_log()")
+cur.execute("SELECT * FROM bot_log" )
+
 # Указываем путь на токены бота "файл .env"
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 bot = Bot(token=TELEGRAM_TOKEN)
@@ -70,6 +87,12 @@ async def process_start_command(msg: types.Message):
           'Работает с протоколами https.\n' \
           'И находится в постоянной разработке.\n'
     await msg.answer(text=text, reply_markup=kb.inline_kb_full)
+
+
+@dp.message_handler(commands=['help'])
+async def process_help_command(message: types.Message):
+    await message.reply("Чтобы начать работу, просто напишите ссылку на сайт в формате: yandex.ru")
+
 
 # Ссылка на сайт имеет шаблон простого текста, но внутри мы ловим исключения, если сслыка введена не корректно
 @dp.message_handler()
@@ -111,10 +134,5 @@ async def get_screenshot(msg: types.Message):
         await msg.delete()
 
 
-@dp.message_handler(commands=['help'])
-async def process_help_command(message: types.Message):
-    await message.reply("Чтобы начать работу, просто напишите ссылку на сайт в формате: yandex.ru")
-
-
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    executor.start_polling(dp, timeout = 40.0)
