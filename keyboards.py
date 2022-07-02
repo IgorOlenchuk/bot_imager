@@ -1,7 +1,6 @@
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 import messages as mes
-
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
 
 inline_btn_1 = InlineKeyboardButton(
     mes.add_tg['RU'],

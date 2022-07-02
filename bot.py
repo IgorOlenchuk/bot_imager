@@ -1,23 +1,23 @@
+import logging
 import os
 import time
-import whois
-import logging
-import validators
-import keyboards as kb
-import messages as mes
-import psycopg2
+from logging.handlers import RotatingFileHandler
 
+import psycopg2
+import validators
+import whois
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils import executor
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from dotenv import load_dotenv
-from logging.handlers import RotatingFileHandler
 from psycopg2.extras import LoggingConnection
 from selenium import webdriver
 from selenium.webdriver import FirefoxOptions
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
+import keyboards as kb
+import messages as mes
 
 load_dotenv()
 logging.basicConfig(
@@ -159,7 +159,8 @@ async def get_screenshot(msg: types.Message):
                              photo=open(photo_path, 'rb'),
                              caption=f'{whois_info.domain_name}, '
                                      f'{mes.domen_name[language]} '
-                                     f'{url}, {mes.processing_time[language]}: '
+                                     f'{url}, '
+                                     f'{mes.processing_time[language]}: '
                                      f'{toc - tic:0.4f} '
                                      f'{mes.seconds[language]}',
                              reply_markup=inline_kb_3)
