@@ -3,7 +3,7 @@ import os
 import time
 from logging.handlers import RotatingFileHandler
 
-import psycopg2
+# import psycopg2
 import validators
 import whois
 from aiogram import Bot, types
@@ -11,7 +11,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils import executor
 from dotenv import load_dotenv
-from psycopg2.extras import LoggingConnection
+# from psycopg2.extras import LoggingConnection
 from selenium import webdriver
 from selenium.webdriver import FirefoxOptions
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
