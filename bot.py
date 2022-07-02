@@ -4,6 +4,7 @@ import whois
 import logging
 import validators
 import keyboards as kb
+import messages as mes
 import psycopg2
 
 from aiogram import Bot, types, filters
@@ -11,7 +12,6 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram.utils.markdown import text, bold, italic, code, pre
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from database import DatBase
 from dotenv import load_dotenv
 from logging.handlers import RotatingFileHandler
 from psycopg2.extras import LoggingConnection
@@ -42,6 +42,10 @@ logger.warning('Большая нагрузка!')
 logger.error('Бот не смог отправить сообщение')
 logger.critical('Всё упало! Зовите админа!1!111') 
 
+# Делаем язык по умолчанию "Русский" (можно было и от пользователя получить locate, но пока так)
+language = 'RU'
+
+
 # Создаем форматер
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -49,18 +53,18 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 
 # для логирования в БД, необходимо заранее создать БД на сервере + создать таблицу (например - сотрудники "employee")
-db_settings = {
-    "user": os.getenv('POSTGRES_USER'),
-    "password": os.getenv('POSTGRES_PASSWORD'),
-    "host": os.getenv('DB_HOST'),
-    "database" : os.getenv('DB_NAME'),
-    "port" : os.getenv('DB_PORT'),
-}
-conn = psycopg2.connect(connection_factory = LoggingConnection, **db_settings)
-LoggingConnection.initialize(conn, logger)
-cur = conn.cursor()
-cur.execute("CREATE TABLE bot_log()")
-cur.execute("SELECT * FROM bot_log" )
+# db_settings = {
+#     "user": os.getenv('POSTGRES_USER'),
+#     "password": os.getenv('POSTGRES_PASSWORD'),
+#     "host": os.getenv('DB_HOST'),
+#     "database" : os.getenv('DB_NAME'),
+#     "port" : os.getenv('DB_PORT'),
+# }
+# conn = psycopg2.connect(connection_factory = LoggingConnection, **db_settings)
+# LoggingConnection.initialize(conn, logger)
+# cur = conn.cursor()
+# cur.execute("CREATE TABLE bot_log()")
+# cur.execute("SELECT * FROM bot_log" )
 
 # Указываем путь на токены бота "файл .env"
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -78,21 +82,37 @@ options.add_argument('--no-sandbox')
 
 @dp.message_handler(commands=['start'])
 async def process_start_command(msg: types.Message):
-    text = 'Привет! Меня зовут Olencuhk_Imager.\n' \
-          'Я - Бот для создания веб-скриншотов.\n' \
-          'Чтобы получить скриншот - отправьте URL адрес сайта. Например, https://wikipedia.org.\n' \
-          '• С помощью бота вы можете проверять подозрительные ссылки. (Айпилоггеры, фишинговые веб-сайты, скримеры и т.п)\n' \
-          '• Вы также можете добавить меня в свои чаты, и я смогу проверять ссылки, которые отправляют пользователи.\n' \
-          'Olencuhk_Imager. использует geckodriver.\n' \
-          'Работает с протоколами https.\n' \
-          'И находится в постоянной разработке.\n'
-    await msg.answer(text=text, reply_markup=kb.inline_kb_full)
+    text =  mes.start[language]
+    await msg.answer(text=text, reply_markup=kb.inline_kb_full[language])
+
+
+@dp.callback_query_handler(lambda c: c.data == 'btn_lang')
+async def process_callback_btn_lang(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, mes.varible, reply_markup=kb.inline_kb_lang)
+
+
+@dp.callback_query_handler(lambda c: c.data == 'btn_en')
+async def process_callback_btn_btn_en(callback_query: types.CallbackQuery):
+# Меняем глобальную переменную language на Английский
+    global language
+    language = 'EN'
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, mes.start[language], reply_markup=kb.inline_kb_full[language])
+
+
+@dp.callback_query_handler(lambda c: c.data == 'btn_ru')
+async def process_callback_btn_btn_tu(callback_query: types.CallbackQuery):
+# Меняем глобальную переменную language на Русский    
+    global language
+    language = 'RU'
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, mes.start[language], reply_markup=kb.inline_kb_full[language])
 
 
 @dp.message_handler(commands=['help'])
 async def process_help_command(message: types.Message):
-    await message.reply("Чтобы начать работу, просто напишите ссылку на сайт в формате: yandex.ru")
-
+    await message.reply(mes.help[language])
 
 # Ссылка на сайт имеет шаблон простого текста, но внутри мы ловим исключения, если сслыка введена не корректно
 @dp.message_handler()
@@ -102,13 +122,13 @@ async def get_screenshot(msg: types.Message):
         uid = msg.chat.id
         url = msg.text
     except IndexError:
-        await msg.answer('Вы не ввели адрес сайта!')
+        await msg.answer(mes.no_imput[language])
         return
 
     if not validators.url(f'https://{url}'):
-        await msg.answer('Ошибка в адресе сайта')
+        await msg.answer(mes.err_imput[language])
     else:
-        msg  = await msg.answer('Подождите, информация загружается...')
+        msg  = await msg.answer(mes.wait[language])
         photo_path = f'screenshots/{msg.date}_{uid}_{url}.png'
         browser = webdriver.Firefox(options = options)
         browser.set_window_size(1280, 1280)
@@ -123,11 +143,11 @@ async def get_screenshot(msg: types.Message):
         toc = time.perf_counter()
 
 # Подгружаем кнопку под скриншотом, со встроенной ссылкой на whois
-        inline_btn_3 = InlineKeyboardButton('Подробнее', url=f'https://whois.ru/?domain={url}', show_alert=True)
+        inline_btn_3 = InlineKeyboardButton(mes.detailed[language], url=f'https://whois.ru/?domain={url}', show_alert=True)
         inline_kb_3 = InlineKeyboardMarkup(row_width=1).add(inline_btn_3)
         await bot.send_photo(msg.chat.id,
                              photo = open(photo_path, 'rb'),
-                             caption=f"{whois_info.domain_name}, Веб-сайт: {url} Время обработки: {toc - tic:0.4f} секунды",
+                             caption=f"{whois_info.domain_name}, {mes.domen_name[language]} {url} {mes.processing_time[language]} {toc - tic:0.4f} {mes.seconds[language]}",
                              reply_markup=inline_kb_3)
 
 # После выполнения запроса, удаляем текст "Подождите, информация загружается"
