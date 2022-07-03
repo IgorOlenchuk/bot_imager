@@ -77,7 +77,7 @@ jobs:
             fi
             echo "Add new $FILE"
             touch $FILE
-            echo TELEGRAM_TOKEN = ${{ secrets.TELEGRAM_TOKEN }} >> $FILE
+            echo TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> $FILE
             echo DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> $FILE
             echo DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> $FILE
             echo DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }} >> $FILE
