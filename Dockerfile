@@ -31,3 +31,4 @@ COPY ./ /app/
 WORKDIR /app
 # run app
 CMD ["python", "bot.py"]
+ENV TELEGRAM_TOKEN ${TELEGRAM_TOKEN}
