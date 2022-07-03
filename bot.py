@@ -174,7 +174,7 @@ async def get_screenshot(msg: types.Message):
                         f'{mes.processing_time[language]} '
                         f'{toc - tic:0.4f} '
                         f'{mes.seconds[language]}',
-                reply_markup=kb.inline_kb_3)
+                reply_markup=kb.inline_kb_3[language])
 
 # После выполнения запроса, удаляем текст "Подождите, информация загружается"
         await msg.delete()
