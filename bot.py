@@ -1,6 +1,9 @@
+import json
 import logging
 import os
+import socket
 import time
+import urllib.request
 from logging.handlers import RotatingFileHandler
 
 # import psycopg2
@@ -12,7 +15,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils import executor
 from dotenv import load_dotenv
 # from psycopg2.extras import LoggingConnection
-from selenium import webdriver
+from selenium import common, webdriver
 from selenium.webdriver import FirefoxOptions
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
@@ -43,7 +46,10 @@ logger.critical('Всё упало! Зовите админа!1!111')
 # Делаем язык по умолчанию "Русский"
 # можно было и от пользователя получить locate, но пока так...
 language = 'RU'
-# Создаем форматер
+# Задаем глобальные переменные
+url = ''
+whois_info = whois.whois(url)
+# Для логирования: создаем форматер
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
@@ -124,50 +130,73 @@ async def process_help_command(message: types.Message):
 # но внутри мы ловим исключения, если сслыка введена не корректно
 @dp.message_handler()
 async def get_screenshot(msg: types.Message):
-    url = ""
+    global url
+    global whois_info
     try:
         uid = msg.chat.id
         url = msg.text
+        whois_info = whois.whois(url)
     except IndexError:
         await msg.answer(mes.no_imput[language])
         return
-
     if not validators.url(f'https://{url}'):
         await msg.answer(mes.err_imput[language])
     else:
         msg = await msg.answer(mes.wait[language])
+        if whois_info.dnssec == 'unsigned':
+            await msg.delete()
+            await msg.answer(mes.domen_free[language])
+            browser.quit()
         photo_path = f'screenshots/{msg.date}_{uid}_{url}.png'
         browser = webdriver.Firefox(options=options)
         browser.set_window_size(1280, 1280)
-# Начинаем отчет времени выполнения запроса
-        tic = time.perf_counter()
-        browser.get(f'https://{url}')
-        browser.save_screenshot(photo_path)
-        browser.quit()
-        whois_info = whois.whois(url)
-
+# Начинаем отчет времени выполнения запроса,
+# ловим исключения, если сайт не существует
+        try:
+            tic = time.perf_counter()
+            browser.get(f'https://{url}')
+            browser.save_screenshot(photo_path)
+        except common.exceptions.WebDriverException:
+            await msg.answer(mes.dns_err[language])
+        else:
+            browser.quit()
 # Окончаение времени выполнения запроса
-        toc = time.perf_counter()
-
-# Подгружаем кнопку под скриншотом, со встроенной ссылкой на whois
-        inline_btn_3 = InlineKeyboardButton(
-            mes.detailed[language],
-            url=f'https://whois.ru/?domain={url}',
-            show_alert=True)
-        inline_kb_3 = InlineKeyboardMarkup(row_width=1).add(inline_btn_3)
-        await bot.send_photo(msg.chat.id,
-                             photo=open(photo_path, 'rb'),
-                             caption=f'{whois_info.domain_name}, '
-                                     f'{mes.domen_name[language]} '
-                                     f'{url}, '
-                                     f'{mes.processing_time[language]}: '
-                                     f'{toc - tic:0.4f} '
-                                     f'{mes.seconds[language]}',
-                             reply_markup=inline_kb_3)
+            toc = time.perf_counter()
+    # Подгружаем кнопку под скриншотом, со встроенной ссылкой на whois
+            await bot.send_photo(msg.chat.id,
+                                    photo=open(photo_path, 'rb'),
+                                    caption=f'{whois_info.domain_name}\n'
+                                            f'{mes.domen_name[language]}'
+                                            f'{url}\n'
+                                            f'{mes.processing_time[language]}'
+                                            f'{toc - tic:0.4f}'
+                                            f'{mes.seconds[language]}',
+                                    reply_markup=kb.inline_kb_3)
 
 # После выполнения запроса, удаляем текст "Подождите, информация загружается"
         await msg.delete()
 
+@dp.callback_query_handler(lambda c: c.data == 'btn_detailed')
+async def process_callback_btn_btn_tu(callback_query: types.CallbackQuery):
+    ip = socket.gethostbyname(url)
+    url_ip = f'http://ipinfo.io/{ip}/json'
+    getInfo = urllib.request.urlopen(url_ip)
+    data = json.load(getInfo)
+    ip_add=data['ip']
+    org=data['org']
+    city = data['city']
+    country=data['country']
+    region=data['region']
+    timezone=data['timezone']
+    await bot.answer_callback_query(
+        callback_query.id,
+        text=f'IP: {ip}\n \n'
+             f'{mes.timezone[language]}: {timezone}\n'
+             f'{mes.country[language]}: {country}\n'
+             f'{mes.city[language]}: {city}\n \n'
+             f'{mes.org[language]}: {org}\n'
+             f'{mes.org2[language]}: {whois_info.org}\n',
+        show_alert=True)
 
 if __name__ == '__main__':
     executor.start_polling(dp, timeout=40.0)

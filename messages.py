@@ -26,8 +26,12 @@ help = {'RU': 'Чтобы начать работу, просто напишит
         'EN': 'To get started, just write a link to the site in the format: yandex.ru'}
 no_imput ={'RU': 'Вы не ввели адрес сайта!',
            'EN': 'You have not entered the website address!'}
+domen_free ={'RU': 'Домен свободен!',
+           'EN': 'Domain is free!'}
 err_imput = {'RU': 'Ошибка в адресе сайта',
              'EN': 'Error in the site address'}
+dns_err = {'RU': 'Такого сайта не существует, возможно, ошибка в названии',
+           'EN': 'There is no such site, perhaps there is a mistake in the name'}
 wait = {'RU': 'Подождите, информация загружается...',
         'EN': 'Wait, the information is loading...'}
 detailed = {'RU': 'Подробнее',
@@ -38,3 +42,13 @@ processing_time = {'RU': 'Время обработки:',
                    'EN': 'Processing time'}
 seconds = {'RU': 'секунды',
            'EN': 'seconds'}
+timezone = {'RU': 'Континент',
+           'EN': 'Timezone'}
+country = {'RU': 'Страна',
+           'EN': 'Country'}
+city = {'RU': 'Город',
+        'EN': 'City'}
+org = {'RU': 'Провайдер',
+       'EN': 'Provider'}
+org2 = {'RU': 'Организация',
+       'EN': 'Organization'}

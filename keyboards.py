@@ -1,6 +1,8 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+import bot
 import messages as mes
+from bot import language
 
 inline_btn_1 = InlineKeyboardButton(
     mes.add_tg['RU'],
@@ -22,3 +24,9 @@ inline_kb_full = {
 inline_btn_4 = InlineKeyboardButton(mes.en, callback_data='btn_en')
 inline_btn_5 = InlineKeyboardButton(mes.ru, callback_data='btn_ru')
 inline_lang = InlineKeyboardMarkup(row_width=2).add(inline_btn_4, inline_btn_5)
+
+inline_btn_3 = InlineKeyboardButton(
+    mes.detailed[language],
+    callback_data='btn_detailed')
+inline_kb_3 = InlineKeyboardMarkup(row_width=1).add(inline_btn_3)
+
