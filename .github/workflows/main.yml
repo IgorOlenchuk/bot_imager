@@ -65,8 +65,6 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }} # Если ваш ssh-ключ защищён фразой-паролем
           password: ${{ secrets.PASSWORD }}
           script: |
             sudo docker pull ashmanx/bot_imager
