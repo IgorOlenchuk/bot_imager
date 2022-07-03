@@ -11,7 +11,7 @@ import validators
 import whois
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from aiogram.utils import executor
 from dotenv import load_dotenv
 # from psycopg2.extras import LoggingConnection
@@ -85,7 +85,10 @@ options.add_argument('--no-sandbox')
 @dp.message_handler(commands=['start'])
 async def process_start_command(msg: types.Message):
     text = mes.start[language]
-    await msg.answer(text=text, reply_markup=kb.inline_kb_full[language])
+    await msg.answer(
+        text=text,
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=kb.inline_kb_full[language])
 
 
 @dp.callback_query_handler(lambda c: c.data == 'btn_lang')
@@ -166,10 +169,10 @@ async def get_screenshot(msg: types.Message):
             await bot.send_photo(msg.chat.id,
                                     photo=open(photo_path, 'rb'),
                                     caption=f'{whois_info.domain_name}\n'
-                                            f'{mes.domen_name[language]}'
+                                            f'{mes.domen_name[language]} '
                                             f'{url}\n'
-                                            f'{mes.processing_time[language]}'
-                                            f'{toc - tic:0.4f}'
+                                            f'{mes.processing_time[language]} '
+                                            f'{toc - tic:0.4f} '
                                             f'{mes.seconds[language]}',
                                     reply_markup=kb.inline_kb_3)
 
