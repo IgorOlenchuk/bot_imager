@@ -31,4 +31,3 @@ COPY ./ /app/
 WORKDIR /app
 # run app
 CMD ["python", "bot.py"]
-ENV TELEGRAM_TOKEN '1318925936:AAFJBq7ZKJQmVKy0vREuLYtdRer6EtuaJO8'

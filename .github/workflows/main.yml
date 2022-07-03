@@ -65,7 +65,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }}
+          ssh_private_key: ${{ secrets.PASSWORD }}
           script: |
             FILE=.env
             if [ -f "$FILE" ]
@@ -87,26 +87,12 @@ jobs:
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> $FILE
             echo DB_HOST=${{ secrets.DB_HOST }} >> $FILE
             echo DB_PORT=${{ secrets.DB_PORT }} >> $FILE
-      - name: Check is docker install
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            if sudo service docker status > /dev/null 2>&1
-            then
-                sudo apt-get update && sudo apt-get upgrade docker-ce -y
-            else
-                curl -fsSL https://get.docker.com -o get-docker.sh > /dev/null 2>&1
-                sh get-docker.sh
-            fi
       - name: deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }}
+          ssh_private_key: ${{ secrets.PASSWORD }}
           script: |
             # Выполняет pull образа с DockerHub
             sudo docker pull ashmanx/bot_imager
