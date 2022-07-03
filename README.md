@@ -1,76 +1,90 @@
-# Olenchuk_BOT
+# Bot-imager
+## Тестовое задание
+[![bot_imager](https://github.com/igorolenchuk/bot_imager/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/IgorOlenchuk/bot_imager/actions/workflows/main.yml)
 
-Index
-Описание
-Полный текст задания
-Локальное использование
-Deploy
+[![Python](https://img.shields.io/badge/-Python-464646?style=flat-square&logo=Python)](https://www.python.org/)
+[![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-464646?style=flat-square&logo=PostgreSQL)](https://www.postgresql.org/)
+[![docker](https://img.shields.io/badge/-Docker-464646?style=flat-square&logo=docker)](https://www.docker.com/)
+[![GitHub%20Actions](https://img.shields.io/badge/-GitHub%20Actions-464646?style=flat-square&logo=GitHub%20actions)](https://github.com/features/actions)
 
+# Index
+  - [Описание](#описание)
+  - [Полный текст задания](#полный-текст-задания)
+  - [Локальное использование](#локальное-использование)
+  - [Deploy](#deploy)
 
-⬆ Back to Index
-
-Описание
-Привет! Меня зовут Olencuhk_Imager.\n' \
-'Я - Бот для создания веб-скриншотов.\n' \
-'Чтобы получить скриншот - отправьте URL адрес сайта. Например, https://wikipedia.org.\n' \
-'• С помощью бота вы можете проверять подозрительные ссылки. (Айпилоггеры, фишинговые веб-сайты, скримеры и т.п)\n' \
-'• Вы также можете добавить меня в свои чаты, и я смогу проверять ссылки, которые отправляют пользователи.\n' \
-'Olencuhk_Imager. использует geckodriver.\n' \
-'Работает с протоколами https.\n' \
-'И находится в постоянной разработке.\n'),
-
-
-⬆ Back to Index
-
-Полный текст задания
+<br><br>
+**[⬆ Back to Index](#index)**
+## Описание
+**bot_imager** — Telegram Bot. Бот для создания веб-скриншотов.<br>
+Чтобы получить скриншот - отправьте URL адрес сайта. Например, https://wikipedia.org.<br>
+• С помощью бота вы можете проверять подозрительные ссылки. (Айпилоггеры, фишинговые веб-сайты, скримеры и т.п)<br>
+• Вы также можете добавить меня в свои чаты, и я смогу проверять ссылки, которые отправляют пользователи.<br>
+bot_imager. использует geckodriver.<br>
+Работает с протоколами https.
+<br><br>
+**[⬆ Back to Index](#index)**
+### Полный текст задания
 Напиши клон телеграм-бота @siteshot_bot, который присылает скриншот веб-страницы в ответ на
 присланную боту ссылку.
 
-Требования:
+*Требования:*<br>
+- Python 3.x <br>
 
-Python 3.x
-Выполнение каждого технического требования, кроме первого, оценивается в 1 балл. Техническое
+```Выполнение каждого технического требования, кроме первого, оценивается в 1 балл. Техническое
 требование #1 не оценивается. Выполнение функциональных требований, кроме помеченных как “бонус”,
 оценивается так же в 1 балл.
 Всего для прохождения на следующий этап нужно набрать не меньше 15 баллов.
-Бонус-баллы также могут быть назначены за:
-1 документацию в коде
-2 юнит-тесты
-3 архитектуру, позволяющую масштабировать обработку запросов от пользователей в режиме он-лайн
-4 реализацию админинстративного интерфейса для бота
-5 другие полезные расширения возможностей бота
+Бонус-баллы также могут быть назначены за: документацию в коде, юнит-тесты, архитектуру, позволяющую масштабировать обработку запросов от пользователей в режиме он-лайн, реализацию админинстративного интерфейса для бота, другие полезные расширения возможностей бота
 Срок выполнения 7 дней.
-Ссылку на гитхаб отправить на info@nekidaem.ru.
+```
+<br><br>
+**[⬆ Back to Index](#index)**
+## Локальное использование
 
+1) Создаем `.env` и заполняем переменные окружения, например:
 
-⬆ Back to Index
-
-Локальное использование
-Создаем .env и заполняем переменные окружения, например:
+```shell
 vim .env
+```
+```text
 DB_NAME=postgres
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 DB_HOST=db
 DB_PORT=5432
-Устанавливаем Docker
-Собираем docker-compose в detach mode (background):
-docker-compose up --build -d --force-recreate
-Наполняем Postgres данными:
+TELEGRAM_TOKEN='<'токен от бота'>'
+```
+2) Устанавливаем [Docker](https://docs.docker.com/engine/install/)
+3) Собираем `docker` в detach mode (background):
+```shell
+docker pull ashmanx/bot_imager
+```
+# 6) Наполняем `Postgres` данными:
+```shell
 docker-compose exec web python3 manage.py loaddata fixture.json
-Останавливаем и удаляем контейнеры, сети, тома и образы:
+```
+# 7) Останавливаем и удаляем контейнеры, сети, тома и образы:
+```shell
 docker-compose down -v --remove-orphans
-
-
-⬆ Back to Index
-
-Deploy
-Выдать права на запуск данных скриптов:
+```
+<br><br>
+**[⬆ Back to Index](#index)**
+## Deploy
+1) Выдать права на запуск данных скриптов: 
+```shell
 chmod +x ./blog/entrypoint.sh && chmod +x ./blog/entrypoint.prod.sh
-Создать образ и запустить контейнер в фоне:
+```
+2) Создать образ и запустить контейнер в фоне:
+```shell
 docker-compose -f docker-compose.yml up -d --build
+```
+5) Заполнить таблицы подготовленными данными. `3-4` можно пропустить - сразу запустить этот пункт
+```shell
+docker-compose -f docker-compose.yml exec web python bot.py fill_db
+```
 
-Автор
+### Автор
 Игорь Оленчук
 
 Технические требования
