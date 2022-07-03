@@ -11,7 +11,7 @@ import validators
 import whois
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from aiogram.types import ParseMode
 from aiogram.utils import executor
 from dotenv import load_dotenv
 # from psycopg2.extras import LoggingConnection
@@ -149,7 +149,6 @@ async def get_screenshot(msg: types.Message):
         if whois_info.dnssec == 'unsigned':
             await msg.delete()
             await msg.answer(mes.domen_free[language])
-            browser.quit()
         photo_path = f'screenshots/{msg.date}_{uid}_{url}.png'
         browser = webdriver.Firefox(options=options)
         browser.set_window_size(1280, 1280)
@@ -166,21 +165,22 @@ async def get_screenshot(msg: types.Message):
 # Окончаение времени выполнения запроса
             toc = time.perf_counter()
     # Подгружаем кнопку под скриншотом, со встроенной ссылкой на whois
-            await bot.send_photo(msg.chat.id,
-                                    photo=open(photo_path, 'rb'),
-                                    caption=f'{whois_info.domain_name}\n'
-                                            f'{mes.domen_name[language]} '
-                                            f'{url}\n'
-                                            f'{mes.processing_time[language]} '
-                                            f'{toc - tic:0.4f} '
-                                            f'{mes.seconds[language]}',
-                                    reply_markup=kb.inline_kb_3)
+            await bot.send_photo(
+                msg.chat.id,
+                photo=open(photo_path, 'rb'),
+                caption=f'{whois_info.domain_name}\n'
+                        f'{mes.domen_name[language]} '
+                        f'{url}\n'
+                        f'{mes.processing_time[language]} '
+                        f'{toc - tic:0.4f} '
+                        f'{mes.seconds[language]}',
+                reply_markup=kb.inline_kb_3)
 
 # После выполнения запроса, удаляем текст "Подождите, информация загружается"
         await msg.delete()
 
 @dp.callback_query_handler(lambda c: c.data == 'btn_detailed')
-async def process_callback_btn_btn_tu(callback_query: types.CallbackQuery):
+async def process_callback_btn_detailed(callback_query: types.CallbackQuery):
     ip = socket.gethostbyname(url)
     url_ip = f'http://ipinfo.io/{ip}/json'
     getInfo = urllib.request.urlopen(url_ip)
@@ -189,7 +189,6 @@ async def process_callback_btn_btn_tu(callback_query: types.CallbackQuery):
     org=data['org']
     city = data['city']
     country=data['country']
-    region=data['region']
     timezone=data['timezone']
     await bot.answer_callback_query(
         callback_query.id,
@@ -202,4 +201,4 @@ async def process_callback_btn_btn_tu(callback_query: types.CallbackQuery):
         show_alert=True)
 
 if __name__ == '__main__':
-    executor.start_polling(dp, timeout=40.0)
+    executor.start_polling(dp, skip_updates = True, timeout=40.0)
