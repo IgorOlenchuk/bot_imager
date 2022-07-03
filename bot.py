@@ -179,17 +179,17 @@ async def get_screenshot(msg: types.Message):
 # После выполнения запроса, удаляем текст "Подождите, информация загружается"
         await msg.delete()
 
+
 @dp.callback_query_handler(lambda c: c.data == 'btn_detailed')
 async def process_callback_btn_detailed(callback_query: types.CallbackQuery):
     ip = socket.gethostbyname(url)
     url_ip = f'http://ipinfo.io/{ip}/json'
-    getInfo = urllib.request.urlopen(url_ip)
-    data = json.load(getInfo)
-    ip_add=data['ip']
-    org=data['org']
+    getinfo = urllib.request.urlopen(url_ip)
+    data = json.load(getinfo)
+    org = data['org']
     city = data['city']
-    country=data['country']
-    timezone=data['timezone']
+    country = data['country']
+    timezone = data['timezone']
     await bot.answer_callback_query(
         callback_query.id,
         text=f'IP: {ip}\n \n'
@@ -201,4 +201,4 @@ async def process_callback_btn_detailed(callback_query: types.CallbackQuery):
         show_alert=True)
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates = True, timeout=40.0)
+    executor.start_polling(dp, skip_updates=True, timeout=40.0)
