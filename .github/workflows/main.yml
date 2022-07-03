@@ -82,4 +82,4 @@ jobs:
             sudo docker pull ashmanx/bot_imager
             #остановка всех контейнеров
             sudo docker stop $(sudo docker ps -a -q)
-            sudo docker run --rm ashmanx/bot_imager
+            sudo docker run -d ashmanx/bot_imager
