@@ -164,7 +164,7 @@ async def get_screenshot(msg: types.Message):
             browser.quit()
 # Окончаение времени выполнения запроса
             toc = time.perf_counter()
-    # Подгружаем кнопку под скриншотом, со встроенной ссылкой на whois
+    # Подгружаем кнопку под скриншотом
             await bot.send_photo(
                 msg.chat.id,
                 photo=open(photo_path, 'rb'),
