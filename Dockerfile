@@ -20,6 +20,7 @@ RUN wget --no-verbose -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geck
   && ln -fs /opt/geckodriver-$GECKODRIVER_VERSION /bin/wires
 
 RUN mkdir /app
+RUN mkdir /app/storage
 COPY requirements.txt /app
 RUN mkdir /app/screenshots
 # install dependencies
@@ -31,4 +32,4 @@ COPY ./ /app/
 WORKDIR /app
 # run app
 CMD ["python", "bot.py"]
-ENV TELEGRAM_TOKEN ${TELEGRAM_TOKEN}
+ENV TELEGRAM_TOKEN '1318925936:AAFJBq7ZKJQmVKy0vREuLYtdRer6EtuaJO8'
