@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
           script: |
-                      FILE=.env
+            FILE=.env
             if [ -f "$FILE" ]
             then
               echo "$FILE exists and will removed"
