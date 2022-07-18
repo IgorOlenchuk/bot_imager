@@ -1,3 +1,4 @@
+from email import message
 import json
 import logging
 import os
@@ -183,6 +184,13 @@ async def process_callback_btn_detailed(callback_query: types.CallbackQuery):
              f'{mes.org[language]}: {org}\n'
              f'{mes.org2[language]}: {whois_info.org}\n',
         show_alert=True)
+
+@dp.callback_query_handler(lambda c: c.data == 'copy_url')
+async def process_callback_btn_detailed(callback_query: types.CallbackQuery):
+    await bot.copy_message(
+        chat_id=callback_query.id,
+        from_chat_id=callback_query.id,
+        message_id=callback_query.message.id)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True, timeout=40.0)
