@@ -31,8 +31,12 @@ inline_btn_3 = InlineKeyboardButton(
 inline_btn_8 = InlineKeyboardButton(
     mes.detailed['EN'],
     callback_data='btn_detailed')
+inline_btn_9 = InlineKeyboardButton(
+    mes.copy_url,
+    callback_data='copy_url')
 inline_kb_3 = {
     'RU': InlineKeyboardMarkup(row_width=1).add(inline_btn_3),
+    'RU': InlineKeyboardMarkup(row_width=1).add(inline_btn_9),
     'EN': InlineKeyboardMarkup(row_width=1).add(inline_btn_8)
     }
 

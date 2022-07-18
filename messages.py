@@ -1,5 +1,5 @@
 import emoji
-
+copy_url = "Скопировать"
 varible = emoji.emojize('🇷🇺 Choose your language:')
 en =  emoji.emojize('🏴󠁧󠁢󠁥󠁮󠁧󠁿English')
 ru = emoji.emojize('🇷🇺 Русский')
