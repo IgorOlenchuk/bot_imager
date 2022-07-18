@@ -54,22 +54,6 @@ formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 handler.setFormatter(formatter)
-# для логирования в БД, необходимо заранее создать БД на сервере
-# + создать таблицу (например - сотрудники "employee")
-# db_settings = {
-#     "user": os.getenv('POSTGRES_USER'),
-#     "password": os.getenv('POSTGRES_PASSWORD'),
-#     "host": os.getenv('DB_HOST'),
-#     "database" : os.getenv('DB_NAME'),
-#     "port" : os.getenv('DB_PORT'),
-# }
-# conn = psycopg2.connect(
-#    connection_factory = LoggingConnection, **db_settings)
-# LoggingConnection.initialize(conn, logger)
-# cur = conn.cursor()
-# cur.execute("CREATE TABLE bot_log()")
-# cur.execute("SELECT * FROM bot_log" )
-# Указываем путь на токены бота "файл .env"
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 bot = Bot(token=TELEGRAM_TOKEN)
 dp = Dispatcher(bot)
