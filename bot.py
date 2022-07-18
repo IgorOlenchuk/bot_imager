@@ -189,7 +189,7 @@ async def process_callback_btn_detailed(callback_query: types.CallbackQuery):
     await bot.copy_message(
         chat_id=callback_query.id,
         from_chat_id=callback_query.id,
-        message_id=callback_query.message.id)
+        message_id=callback_query.message.from_id)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True, timeout=40.0)
