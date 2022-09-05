@@ -69,7 +69,7 @@ options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
 
 @dp.message_handler(content_types=["new_chat_members"])
-def captcha_manager(message types.Message):
+def captcha_manager(message: types.Message):
     captcha_manager = CaptchaManager(message.from_user.id, default_timeout=90)
     new_member(message)
 
