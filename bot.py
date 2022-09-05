@@ -1,6 +1,6 @@
 import json
 import logging
-from msilib import type_string
+# from msilib import type_string
 import os
 import socket
 import time
@@ -68,11 +68,12 @@ options.add_argument('--disable-gpu')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
 
-def captcha_manager(m: types.Message):
-    captcha_manager = CaptchaManager(m.from_user.id, default_timeout=90)
+@dp.message_handler(content_types=["new_chat_members"])
+def captcha_manager(message types.Message):
+    captcha_manager = CaptchaManager(message.from_user.id, default_timeout=90)
+    new_member(message)
 
 # Message handler for new chat members
-@dp.message_handler(content_types=["new_chat_members"])
 def new_member(message):
     for new_user in message.new_chat_members:
         captcha_manager.restrict_chat_member(bot, message.chat.id, new_user.id)
