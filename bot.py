@@ -23,6 +23,7 @@ import keyboards as kb
 import messages as mes
 
 from pyTelegramBotCAPTCHA import CaptchaManager
+from telebot import TeleBot
 
 load_dotenv()
 logging.basicConfig(
