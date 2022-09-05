@@ -66,7 +66,8 @@ options.add_argument('--headless')
 options.add_argument('--disable-gpu')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
-captcha_manager = CaptchaManager(bot.get_me().id, default_timeout=90)
+me = bot.get_me()
+captcha_manager = CaptchaManager(me.id, default_timeout=90)
 
 # Message handler for new chat members
 @dp.message_handler(content_types=["new_chat_members"])
