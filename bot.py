@@ -1,6 +1,5 @@
 import json
 import logging
-# from msilib import type_string
 import os
 import socket
 import time
@@ -22,8 +21,6 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 import keyboards as kb
 import messages as mes
-
-from pyTelegramBotCAPTCHA import CaptchaManager
 
 load_dotenv()
 logging.basicConfig(
@@ -68,54 +65,14 @@ options.add_argument('--disable-gpu')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
 
-@dp.message_handler(content_types=["new_chat_members"])
-def captcha_manager(message: types.Message):
-    captcha_manager = CaptchaManager(message.from_user.id, default_timeout=90)
-    new_member(message)
 
-# Message handler for new chat members
-def new_member(message):
-    for new_user in message.new_chat_members:
-        captcha_manager.restrict_chat_member(bot, message.chat.id, new_user.id)
-        captcha_manager.send_new_captcha(bot, message.chat, new_user)
-                                                                    
-# Callback query handler
-@dp.callback_query_handler(func=lambda callback:True)
-def on_callback(callback):
-    captcha_manager.update_captcha(bot, callback)
-                                                                    
-# Handler for correct solved CAPTCHAs
-@captcha_manager.on_captcha_correct
-def on_correct(captcha):
-    bot.send_message(captcha.chat.id, "Congrats! You solved the CAPTCHA!")
-    captcha_manager.unrestrict_chat_member(bot, captcha.chat.id, captcha.user.id)
-    captcha_manager.delete_captcha(bot, captcha)
-
-# Handler for wrong solved CAPTCHAs
-@captcha_manager.on_captcha_not_correct
-def on_not_correct(captcha):
-    if (captcha.incorrect_digits == 1 and captcha.previous_tries < 2):
-        captcha_manager.refresh_captcha(bot, captcha)
-    else:
-        bot.kick_chat_member(captcha.chat.id, captcha.user.id)
-        bot.send_message(captcha.chat.id, f"{captcha.user.first_name} failed solving the CAPTCHA and was banned!")
-        captcha_manager.delete_captcha(bot, captcha)
-  
-# Handler for timed out CAPTCHAS
-@captcha_manager.on_captcha_timeout
-def on_timeout(captcha):
-    bot.kick_chat_member(captcha.chat.id, captcha.user.id)
-    bot.send_message(captcha.chat.id, f"{captcha.user.first_name} did not solve the CAPTCHA and was banned!")
-    captcha_manager.delete_captcha(bot, captcha)
-
-
-# @dp.message_handler(commands=['start'])
-# async def process_start_command(msg: types.Message):
-#     text = mes.start[language]
-#     await msg.answer(
-#         text=text,
-#         parse_mode=ParseMode.MARKDOWN,
-#         reply_markup=kb.inline_kb_full[language])
+@dp.message_handler(commands=['start'])
+async def process_start_command(msg: types.Message):
+    text = mes.start[language]
+    await msg.answer(
+        text=text,
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=kb.inline_kb_full[language])
 
 
 @dp.callback_query_handler(lambda c: c.data == 'btn_lang')
