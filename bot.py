@@ -106,13 +106,13 @@ def on_timeout(captcha):
     captcha_manager.delete_captcha(bot, captcha)
 
 
-@dp.message_handler(commands=['start'])
-async def process_start_command(msg: types.Message):
-    text = mes.start[language]
-    await msg.answer(
-        text=text,
-        parse_mode=ParseMode.MARKDOWN,
-        reply_markup=kb.inline_kb_full[language])
+# @dp.message_handler(commands=['start'])
+# async def process_start_command(msg: types.Message):
+#     text = mes.start[language]
+#     await msg.answer(
+#         text=text,
+#         parse_mode=ParseMode.MARKDOWN,
+#         reply_markup=kb.inline_kb_full[language])
 
 
 @dp.callback_query_handler(lambda c: c.data == 'btn_lang')
