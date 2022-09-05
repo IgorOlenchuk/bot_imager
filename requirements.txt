@@ -6,7 +6,9 @@ async-generator==1.10
 async-timeout==4.0.2
 attrs==21.4.0
 Babel==2.9.1
+backports.zoneinfo==0.2.1
 cachetools==4.2.2
+captcha==0.4
 certifi==2022.6.15
 cffi==1.15.0
 charset-normalizer==2.0.12
@@ -22,12 +24,15 @@ isort==5.10.1
 mccabe==0.6.1
 multidict==6.0.2
 outcome==1.2.0
+Pillow==9.2.0
 psycopg2-binary==2.9.3
 pycodestyle==2.8.0
 pycparser==2.21
 pyflakes==2.4.0
 pyOpenSSL==22.0.0
 PySocks==1.7.1
+pyTelegramBotAPI==4.7.0
+pyTelegramBotCAPTCHA==1.1.4
 python-dotenv==0.20.0
 python-whois==0.7.3
 pytz==2022.1
