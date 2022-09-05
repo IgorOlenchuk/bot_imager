@@ -1,5 +1,6 @@
 import json
 import logging
+from msilib import type_string
 import os
 import socket
 import time
@@ -66,8 +67,9 @@ options.add_argument('--headless')
 options.add_argument('--disable-gpu')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
-me = bot.get_me()
-captcha_manager = CaptchaManager(me.User.id, default_timeout=90)
+
+def captcha_manager(m: types.Message):
+    captcha_manager = CaptchaManager(m.from_user.id, default_timeout=90)
 
 # Message handler for new chat members
 @dp.message_handler(content_types=["new_chat_members"])
